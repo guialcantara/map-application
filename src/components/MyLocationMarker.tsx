@@ -1,25 +1,16 @@
 import { divIcon } from "leaflet"
-import { useEffect, useMemo, useRef, useState } from "react"
-import { renderToStaticMarkup } from "react-dom/server"
-import { Circle, LayerGroup, Marker, Popup } from "react-leaflet"
 import { MapPin } from 'phosphor-react'
+import { useContext, useEffect, useMemo, useRef, useState } from "react"
+import { renderToStaticMarkup } from "react-dom/server"
+import { Circle, Marker, Popup } from "react-leaflet"
+import { PositionContext } from "../contexts/UsePosition"
 
-export interface Position {
-  lat: number
-  lng: number
-}
 
-export interface MyLocationMarkerProps {
-  coord: Position
-  onChangePos?: (coord: Position) => void
-}
-
-export function MyLocationMarker({ coord, onChangePos }: MyLocationMarkerProps) {
+export function MyLocationMarker() {
   const [draggable, setDraggable] = useState(false)
-  const [position, setPosition] = useState(coord)
   const circleRef = useRef(null)
   const markerRef = useRef(null)
-
+  const { position, setPosition } = useContext(PositionContext)
   const iconMarkup = renderToStaticMarkup(
     <MapPin size={40} color={draggable ? "#0f829f" : "#256114"} weight="fill" />
   );
@@ -33,9 +24,7 @@ export function MyLocationMarker({ coord, onChangePos }: MyLocationMarkerProps) 
 
 
   useEffect(() => {
-    if (onChangePos) {
-      onChangePos(position)
-    }
+    setPosition(position)
   }, [position])
 
   const eventHandlers = useMemo(
