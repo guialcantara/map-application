@@ -1,8 +1,8 @@
-import axios from "axios";
-import { createContext, ReactNode, useEffect, useState } from "react";
+import axios from 'axios'
+import { createContext, ReactNode, useEffect, useState } from 'react'
 
 export interface Position {
-  lat: number,
+  lat: number
   lng: number
 }
 
@@ -23,7 +23,6 @@ interface PositionContextProviderProps {
 export function PositionContextProvider({
   children,
 }: PositionContextProviderProps) {
-
   const [position, setPosition] = useState({} as Position)
   const [map, setMap] = useState()
   const [firstPosition, setFirstPosition] = useState({} as Position)
@@ -31,30 +30,32 @@ export function PositionContextProvider({
   async function getCurrentLocation() {
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => {
-        setPosition({ lat: coords.latitude, lng: coords.longitude });
-        setFirstPosition({ lat: coords.latitude, lng: coords.longitude });
+        setPosition({ lat: coords.latitude, lng: coords.longitude })
+        setFirstPosition({ lat: coords.latitude, lng: coords.longitude })
       },
       (blocked) => {
         if (blocked) {
           async function fetch() {
             try {
-              const { data } = await axios.get("https://ipapi.co/json");
-              setPosition({ lat: data.latitude, lng: data.longitude });
+              const { data } = await axios.get('https://ipapi.co/json')
+              setPosition({ lat: data.latitude, lng: data.longitude })
               setFirstPosition({ lat: data.latitude, lng: data.longitude })
             } catch (err) {
-              console.error(err);
+              console.error(err)
             }
-          };
-          fetch();
+          }
+          fetch()
         }
-      }
-    );
+      },
+    )
   }
   useEffect(() => {
     getCurrentLocation()
   }, [])
   return (
-    <PositionContext.Provider value={{ firstPosition, position, setPosition, map, setMap }}>
+    <PositionContext.Provider
+      value={{ firstPosition, position, setPosition, map, setMap }}
+    >
       {children}
     </PositionContext.Provider>
   )

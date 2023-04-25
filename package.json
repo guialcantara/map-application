@@ -6,22 +6,31 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "eslint src --ext .tsx --fix"
   },
   "dependencies": {
+    "@phosphor-icons/react": "^2.0.8",
+    "@types/d3-voronoi": "^1.1.9",
+    "@types/lodash": "^4.14.194",
     "@types/react-leaflet": "^2.8.2",
+    "@types/reactour": "^1.18.2",
     "axios": "^1.2.0",
+    "d3-voronoi": "^1.1.4",
     "leaflet": "^1.9.3",
-    "phosphor-react": "^1.4.1",
+    "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-leaflet": "^4.1.0"
+    "react-leaflet": "^4.1.0",
+    "reactour": "^1.19.0"
   },
   "devDependencies": {
+    "@rocketseat/eslint-config": "^1.2.0",
     "@types/react": "^18.0.24",
     "@types/react-dom": "^18.0.8",
     "@vitejs/plugin-react": "^2.2.0",
     "autoprefixer": "^10.4.13",
+    "eslint": "^8.38.0",
     "postcss": "^8.4.19",
     "tailwindcss": "^3.2.4",
     "typescript": "^4.6.4",
