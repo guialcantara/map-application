@@ -1,19 +1,19 @@
+import { MapPin } from '@phosphor-icons/react'
 import axios from 'axios'
+import { divIcon } from 'leaflet'
 import { useContext, useEffect, useState } from 'react'
+import { renderToStaticMarkup } from 'react-dom/server'
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet'
+import Tour from 'reactour'
 import { PositionContext } from '../contexts/UsePosition'
 import { MyLocationMarker } from './MyLocationMarker'
-import Tour from 'reactour'
-import useVoronoi from '../useVoronoi'
 import VoronoiLayer from './VoronoiLayer'
-import { MapPin } from '@phosphor-icons/react'
-import { renderToStaticMarkup } from 'react-dom/server'
-import { divIcon } from 'leaflet'
+import { VoronoiContext } from '../contexts/useVoronoi'
 
 const steps = [
   {
-    selector: '.input-adress',
-    content: 'Here you can type your adress to find your location.',
+    selector: '.input-address',
+    content: 'Here you can type your address to find your location.',
   },
   {
     selector: '.my-location',
@@ -31,17 +31,12 @@ const steps = [
 
 export function Map() {
   const [places, setPlaces] = useState([])
-  const [polygons, setPolygons] = useState<any>([])
   const [tourOpen, setTourOpen] = useState(true)
 
   const { position, firstPosition, setMap } = useContext(PositionContext)
 
-  const {
-    MULT_VORONOI,
-    setShowVoronoi,
-    setEnabledVoronoi,
-    getVoronoiPolygons,
-  } = useVoronoi()
+  const { setShowVoronoi, setEnabledVoronoi, setPoints } =
+    useContext(VoronoiContext)
 
   async function getNearbyPlaces(lat: number, lng: number, radius = 500) {
     try {
@@ -52,17 +47,15 @@ export function Map() {
         `${baseUrl}&lat=${lat}&lon=${lng}&radius=${radius}&limit=100&language=pt-BR&categorySet=7315`,
       )
       setPlaces(response.data.results)
-      const points = response.data.results.map(
-        (place: { position: { lat: number; lon: number } }) => {
-          return [
-            Number(+place.position.lat.toFixed(7)) * MULT_VORONOI,
-            Number(+place.position.lon.toFixed(7)) * MULT_VORONOI,
-          ]
-        },
+      const points = response.data.results.flatMap(
+        (place: { position: { lat: number; lon: number } }) => [
+          Number(+place.position.lat.toFixed(7)),
+          Number(+place.position.lon.toFixed(7)),
+        ],
       )
 
       if (points) {
-        setPolygons(getVoronoiPolygons(points, position))
+        setPoints(points)
         setEnabledVoronoi(true)
         setShowVoronoi(true)
       }
@@ -124,12 +117,7 @@ export function Map() {
         </Marker>
       ))}
 
-      <VoronoiLayer
-        showVoronoi
-        enabledVoronoi
-        voronoiPolygons={polygons}
-        currentPosition={position}
-      />
+      <VoronoiLayer showVoronoi enabledVoronoi currentPosition={position} />
     </MapContainer>
   )
 }

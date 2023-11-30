@@ -52,6 +52,7 @@ export function MyLocationMarker() {
       position={position}
       ref={markerRef}
       icon={customMarkerIcon}
+      zIndexOffset={1000}
     >
       <Popup minWidth={90}>
         <span

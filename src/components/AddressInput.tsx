@@ -40,11 +40,12 @@ export function AddressInput() {
     } else {
       setOptions([])
     }
-  }, [debouncedSearchTerm])
+  }, [debouncedSearchTerm]) // eslint-disable-line
+
   return (
     <div className="absolute z-[99999] top-3 left-16 ">
       <input
-        className="group  h-8 w-52 px-2 outline-none input-adress"
+        className="group  h-8 w-52 px-2 outline-none input-address"
         placeholder="type your address..."
         onChange={(e) => {
           setSearchTerm(e.target.value)

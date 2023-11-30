@@ -1,54 +1,42 @@
-import React from 'react'
-import { LayerGroup, Polyline } from 'react-leaflet'
-import useVoronoi from '../useVoronoi'
-import { LatLngExpression } from 'leaflet'
+import { useContext, useEffect } from 'react'
+import { LayerGroup, Polygon, useMap } from 'react-leaflet'
+import { VoronoiContext } from '../contexts/useVoronoi'
 
-const VoronoiLayer = ({
-  showVoronoi,
-  enabledVoronoi,
-  voronoiPolygons,
-  currentPosition,
-}: any) => {
-  const { MULT_VORONOI } = useVoronoi()
+const VoronoiLayer = ({ showVoronoi, enabledVoronoi, points }: any) => {
+  const map = useMap()
 
-  const voronoiBouds: LatLngExpression[] = [
-    {
-      lat: currentPosition.lat - 0.01,
-      lng: currentPosition.lng - 0.01,
-    },
-    {
-      lat: currentPosition.lat + 0.01,
-      lng: currentPosition.lng - 0.01,
-    },
-    {
-      lat: currentPosition.lat + 0.01,
-      lng: currentPosition.lng + 0.01,
-    },
-    {
-      lat: currentPosition.lat - 0.01,
-      lng: currentPosition.lng + 0.01,
-    },
-    {
-      lat: currentPosition.lat - 0.01,
-      lng: currentPosition.lng - 0.01,
-    },
-  ]
+  const { setBounds, polygons } = useContext(VoronoiContext)
+  useEffect(() => {
+    const handleViewportChanged = () => {
+      const bounds = map.getBounds()
+      setBounds([
+        bounds.getSouthWest().lat,
+        bounds.getSouthWest().lng,
+        bounds.getNorthEast().lat,
+        bounds.getNorthEast().lng,
+      ])
+    }
+
+    map.on('moveend', handleViewportChanged)
+
+    return () => {
+      map.off('moveend', handleViewportChanged)
+    }
+  }, [map]) // eslint-disable-line
+
   return (
     <>
       {showVoronoi && enabledVoronoi && (
         <LayerGroup>
-          {voronoiPolygons && (
-            <Polyline
-              color="orange"
-              positions={voronoiPolygons.map((polygons: any) =>
+          {polygons && (
+            <Polygon
+              pathOptions={{ color: 'orange', fill: false }}
+              positions={polygons.map((polygons: any) =>
                 polygons.map((point: any) => {
-                  return [point[0] / MULT_VORONOI, point[1] / MULT_VORONOI]
+                  return [point[0], point[1]]
                 }),
               )}
             />
-          )}
-          {currentPosition && voronoiPolygons.length > 0 && (
-            <Polyline color="orange" positions={voronoiBouds} />
           )}
         </LayerGroup>
       )}
